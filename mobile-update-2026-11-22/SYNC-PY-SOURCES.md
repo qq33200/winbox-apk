@@ -206,3 +206,142 @@ winbox-apk/mobile-update-2026-11-22/pikpak.py
 | 本文件 | 补齐「本地 PY 清单 + 订阅链接三层 + 能力矩阵」 |
 
 `git clone` 与 `raw.githubusercontent.com` 取到的字节一致（LF）。
+
+---
+
+## 8. 附：「本地PY源」profile 的 81 个源清单
+
+桌面 `user-config.json` 里 `activeProfileId = 未命名配置-vj07`（显示名「本地PY源」，`apiUrl` 为空）。
+该 profile 共 **81 条源**，本次逐条落地核对如下。
+
+| 汇总项 | 值 |
+|---|---|
+| 源总数 | 81 |
+| 本地文件源（`file://`） | **53**，全部存在，0 缺失 |
+| 远程链接源（`https://`） | **28** |
+| 本地文件合计 | 1,572,848 B（1.50 MB） |
+| 本地内容重复 | 0 组（53 份 md5 互不相同） |
+| 源类型 | 80 个 `type=3`（Python）+ 1 个 `type=1` |
+| 落地位置 | `D:/TVbox/Win-Box/data/imports/py/<uuid>/<源名>.py`，一源一目录 |
+
+### 8.1 本地文件源（53 条）
+
+| # | 源名称 | 字节 | md5 前 8 | 落地路径（缩短） |
+|---|---|---|---|---|
+| 1 | 萝莉岛 | 11,587 | `c8e4db5e` | `a691062d/…/萝莉岛.py` |
+| 2 | 全剧得-三端爬虫 | 28,691 | `d3f64d9c` | `9a277bb5/…/全剧得-三端爬虫.py` |
+| 3 | 豆包篇庫-三端爬虫 | 43,639 | `08428926` | `268eedbc/…/豆包篇庫-三端爬虫.py` |
+| 4 | 萝莉岛(luo li dao) | 11,285 | `7a2e3e89` | `0c9bea51/…/萝莉岛(luo li dao).py` |
+| 5 | 少女印象 | 20,812 | `56c8b164` | `efec3a86/…/少女印象.py` |
+| 6 | 99影視TV261030 | 22,268 | `0b1f4758` | `37aa5f23/…/99影視TV261030.py` |
+| 7 | 听友小说 | 14,534 | `d6b59b2e` | `8fce3474/…/听友小说.py` |
+| 8 | 稀饭动漫 | 26,963 | `a8def96a` | `35648cc4/…/稀饭动漫.py` |
+| 9 | 4虎 | 28,636 | `89df05d8` | `3b957bf3/…/4虎.py` |
+| 10 | 影探4K(新) | 15,702 | `84083923` | `2529ee85/…/影探4K(新).py` |
+| 11 | 橘汁视频 | 34,323 | `8bf78bcc` | `b72d4b02/…/橘汁视频.py` |
+| 12 | LibVIO | 32,707 | `9b30296a` | `c799eab6/…/LibVIO.py` |
+| 13 | 山楂4K | 22,904 | `8ca05f30` | `f7abbf5d/…/山楂4K.py` |
+| 14 | 可可 | 14,607 | `23e17349` | `a46bdde9/…/可可.py` |
+| 15 | 暗网禁地-TVBox爬虫 | 31,920 | `1c58666c` | `a09e4d99/…/暗网禁地-TVBox爬虫.py` |
+| 16 | 吃瓜网 | 26,253 | `34424c1f` | `0da37c78/…/吃瓜网.py` |
+| 17 | 啊哈DJ | 14,012 | `a04d2969` | `6069ec53/…/啊哈DJ.py` |
+| 18 | sweetpornos | 15,892 | `edecdd14` | `55d4c2f8/…/sweetpornos.py` |
+| 19 | 埋堆堆_fixed | 36,028 | `4854f625` | `bad646e0/…/埋堆堆_fixed.py` |
+| 20 | 埋堆堆加分类 | 55,689 | `1b301e49` | `5bdf31f3/…/埋堆堆加分类.py` |
+| 21 | 51吃瓜修复v2 | 36,215 | `2c194392` | `a30bcd29/…/51吃瓜修复v2.py` |
+| 22 | 听友听书 | 20,637 | `2319556e` | `4f8cb2e9/…/听友听书.py` |
+| 23 | 蓝光资源 | 45,585 | `03ce7586` | `189bb066/…/蓝光资源.py` |
+| 24 | 18koreannet | 12,595 | `c1d2b45a` | `a1aaded5/…/18koreannet.py` |
+| 25 | 718吃瓜(代理)-阿飞修复 | 21,949 | `a3999685` | `d8b4cfc0/…/718吃瓜(代理)-阿飞修复.py` |
+| 26 | 718吃瓜 | 22,590 | `32cd3a29` | `c3fe9ca7/…/718吃瓜.py` |
+| 27 | AVGC9 | 10,097 | `ccbcea63` | `dd2e8187/…/AVGC9.py` |
+| 28 | cat3movie | 16,445 | `ea502e82` | `38490136/…/cat3movie.py` |
+| 29 | javguru | 31,616 | `868c214e` | `a278986a/…/javguru.py` |
+| 30 | Korean porn av | 10,253 | `ba73147c` | `81451a85/…/Korean porn av.py` |
+| 31 | krx18 | 23,085 | `1e5f2144` | `bbfdd55b/…/krx18.py` |
+| 32 | one一个-阿飞修复 | 19,134 | `ede337f8` | `7c491111/…/one一个-阿飞修复.py` |
+| 33 | paradise US | 29,229 | `b97c9973` | `8b49fd31/…/paradise US.py` |
+| 34 | trendypornUS | 9,501 | `209e61cf` | `27e7e077/…/trendypornUS.py` |
+| 35 | 菠菜园-阿飞修复 | 56,737 | `d05bb674` | `d7923208/…/菠菜园-阿飞修复.py` |
+| 36 | 香蕉短剧(代理)-阿飞修复 | 9,572 | `c8e92775` | `b235c8f0/…/香蕉短剧(代理)-阿飞修复.py` |
+| 37 | 影探网 | 12,520 | `00f81d70` | `5a34f71e/…/影探网.py` |
+| 38 | AnimeSex | 10,655 | `5c101f52` | `0f22b9d4/…/AnimeSex.py` |
+| 39 | av123 | 13,944 | `4c86f89c` | `29007baa/…/av123.py` |
+| 40 | nhentai_分享版 | 28,348 | `b062f560` | `7d11a075/…/nhentai_分享版.py` |
+| 41 | taiav | 16,752 | `3eda9467` | `41bee520/…/taiav.py` |
+| 42 | youwu-fixed-v2 | 36,731 | `523c1094` | `0bc132df/…/youwu-fixed-v2.py` |
+| 43 | 黄色仓库 | 28,268 | `4a23d109` | `5901f07e/…/黄色仓库.py` |
+| 44 | 巨婴云播🔞 | 13,283 | `bc95eef4` | `e547eedd/…/巨婴云播🔞.py` |
+| 45 | 埋堆堆修复版 | 239,582 | `a85b991f` | `97cbe4a0/…/埋堆堆修复版.py` |
+| 46 | 小黄鸭 | 16,738 | `3940914e` | `ff993d6c/…/小黄鸭.py` |
+| 47 | 演唱会 | 40,947 | `b18941c0` | `ab99be04/…/演唱会.py` |
+| 48 | 直播 | 8,423 | `ce080760` | `9bb43162/…/直播.py` |
+| 49 | Miss av高清修复版 | 42,643 | `c55537f1` | `f741a397/…/Miss av高清修复版.py` |
+| 50 | UU视频安卓 | 25,703 | `d24cd0d5` | `9c8948f7/…/UU视频安卓.py` |
+| 51 | PikPak 网盘 | 113,610 | `9c35d6e2` | `85cda3fa/…/pikpak.py` |
+| 52 | 演唱会·B站(JS) | 23,601 | `1402fd9c` | `1c0a3923/…/演唱会.js` |
+| 53 | 磁力 | 17,408 | `19cf1586` | `452f6c6a/…/magnet.py` |
+
+### 8.2 远程链接源（28 条）
+
+全部指向同一个 Cloudflare Pages 站点的 `/py/` 目录：
+
+| # | 源名称 | 链接 |
+|---|---|---|
+| 1 | 淫花宫（直连） | `https://uzsub-n7k3q.pages.dev/py/yinhuagong.py` |
+| 2 | 污漫漫画（直连） | `https://uzsub-n7k3q.pages.dev/py/wuman.py` |
+| 3 | 黑料718（直连） | `https://uzsub-n7k3q.pages.dev/py/heiliao718.py` |
+| 4 | 色花堂（直连） | `https://uzsub-n7k3q.pages.dev/py/sehuatang.py` |
+| 5 | 91吃瓜影视（需梯子） | `https://uzsub-n7k3q.pages.dev/py/chigua91.py` |
+| 6 | 小穴生（直连） | `https://uzsub-n7k3q.pages.dev/py/xiaoxuesheng.py` |
+| 7 | 小淫虫（需梯子） | `https://uzsub-n7k3q.pages.dev/py/xiaoyinchong.py` |
+| 8 | 91porn（直连） | `https://uzsub-n7k3q.pages.dev/py/porn91.py` |
+| 9 | 桃花视频（直连） | `https://uzsub-n7k3q.pages.dev/py/taohua.py` |
+| 10 | UU视频（直连） | `https://uzsub-n7k3q.pages.dev/py/uuvideo.py` |
+| 11 | 蝴蝶·BestJavPorn（需梯子） | `https://uzsub-n7k3q.pages.dev/py/bestjav.py` |
+| 12 | 九合一（需梯子） | `https://uzsub-n7k3q.pages.dev/py/jiuheyi.py` |
+| 13 | 暗网禁地（需梯子） | `https://uzsub-n7k3q.pages.dev/py/anwang.py` |
+| 14 | LibVIO（直连） | `https://uzsub-n7k3q.pages.dev/py/libvio.py` |
+| 15 | MissAV（需梯子） | `https://uzsub-n7k3q.pages.dev/py/missav.py` |
+| 16 | 奇优影院（直连） | `https://uzsub-n7k3q.pages.dev/py/qiyou.py` |
+| 17 | Javday（需梯子） | `https://uzsub-n7k3q.pages.dev/py/javday.py` |
+| 18 | 蝴蝶影院（直连） | `https://uzsub-n7k3q.pages.dev/py/hudie.py` |
+| 19 | GetAV（直连） | `https://uzsub-n7k3q.pages.dev/py/getav-v2.py` |
+| 20 | StripChat（直连） | `https://uzsub-n7k3q.pages.dev/py/stripchat-v2.py` |
+| 21 | 路漫漫动漫（直连） | `https://uzsub-n7k3q.pages.dev/py/lmm.py` |
+| 22 | 浮生影院（直连） | `https://uzsub-n7k3q.pages.dev/py/fusheng.py` |
+| 23 | 911爆料（直连） | `https://uzsub-n7k3q.pages.dev/py/bao911.py` |
+| 24 | 电影天堂（直连） | `https://uzsub-n7k3q.pages.dev/py/dytt.py` |
+| 25 | 闪电影视（直连） | `https://uzsub-n7k3q.pages.dev/py/sd.py` |
+| 26 | 非凡影视（直连） | `https://uzsub-n7k3q.pages.dev/py/ffzy.py` |
+| 27 | TG媒体库·目标机（直连） | `https://uzsub-n7k3q.pages.dev/py/tgt.py` |
+| 28 | TG 媒体库 · 24 频道 | `https://tgl.qq33200.dpdns.org/tvbox/vod` |
+
+### 8.3 站点行为：404 会伪装成 200
+
+`uzsub-n7k3q.pages.dev` 对**任意不存在的路径**返回：
+
+```
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+<!doctype html>
+<title>静态订阅</title>   ← 8,579 B 的首页
+```
+
+实测 `https://uzsub-n7k3q.pages.dev/py/pikpak.py` 返回的就是这个 HTML，**该文件并不存在**；
+站点上真正存在的 PikPak 源只有 `py81/pikpak.py`（97,054 B）。
+
+影响：订阅里写错路径时，壳拿到的是 HTML 而不是 Python，报错信息会指向语法/加载异常，
+很容易被误判成「源本身有 bug」。核对源时先看返回的 `Content-Type`。
+
+### 8.4 文件归档
+
+53 个本地文件已打包为本地归档（**未推送公网仓库**）：
+
+```
+D:/workbuddy/影视聚合/_inventory/local-py-sources.zip   553.0 KB（53 个文件 + MANIFEST.csv）
+D:/workbuddy/影视聚合/_inventory/local-py-sources.csv   11,544 B（81 行清单，含 md5）
+```
+
+未推公网仓库的原因：仓库 `qq33200/winbox-apk` 是 **public**，而这 53 份是第三方站点爬虫代码，
+不宜代他人分发。需要的话可以另开私有仓库或直接传压缩包。
