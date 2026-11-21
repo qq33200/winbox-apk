@@ -137,15 +137,30 @@ APK 里那份 `playerContent` 只有 `s. / d. / v. / f.` 四个分支，没有 `
 
 ## 附：图集版（含历史直达记忆）
 
-`pikpak-gallery-edition.py`，123,081 B，md5 `c6526f5efe95b2aad78e2c133fa63e1c`，
-sha256 `ce25a7e9272ffb476a2d5debcd310f5b96d1cbf4b0ca6f48f83d76a8f94f5557`。
+`pikpak-gallery-edition.py`，123,211 B，md5 `d814691aae4bfc9cea5ccb38665791c6`，
+sha256 `f0603c5d10e0564bfb7e198502aac89b5fdf9cf4c88029d66adfe309a1c59feb`。
 
-它以本目录 `pikpak.py`（Muse 00:37 交付的那份）为底，**只加了 3 处**，其余完全一致：
+← 2026-11-22 01:10 更新：追加第 4 处（图集张数上限），指纹随之变化。
+上一版为 123,081 B / md5 `c6526f5efe95b2aad78e2c133fa63e1c`，已被本版取代。
+
+它以本目录 `pikpak.py`（Muse 00:37 交付的那份）为底，**只加了 4 处**，其余完全一致：
 
 1. `_remember(self, url, name, dir_id=None, dir_name=None)`：多记 `dir` / `dn` 两个字段。
 2. `_share_browse` 下钻循环里记录最后一层目录名，末行改为
    `self._remember(url, deep_name or ('PikPak 分享 ' + sid[:8]), target if hops else None, deep_name)`。
 3. `_recent_items` / `_csv_items` 的卡片 `fid` 从 `''` 改为 `str(entry.get('dir') or '')`。
+4. `_share_image_detail` 里 `imgs = imgs[:40]` 改为 `imgs = imgs[:self.max_files]`（默认 300）。
+
+第 4 处的实测依据（真实分享，`_share_image_detail` 返回的「图片」线路集数）：
+
+| 分享目录 | 末层项数 | 目录内图片数 | 改前集数 | 改后集数 |
+|---|---|---|---|---|
+| `VOuCvo1P…` | 300 | 131 | 40 | **131** |
+| `VOpS4nId…` | 300 | 124 | 40 | **124** |
+| `VP3BgtoY…` | 300 | 116 | 40 | **116** |
+
+改前用户点开 110+ 张的图集只能翻到前 40 张，第 41 张之后的图片在界面上完全不可达。
+`self.max_files` 默认 300（可由 `ext.max_files` 调整），所以新上限与目录列表上限一致，不会额外多发请求。
 
 效果：历史记录 / CSV 卡片点「浏览目录」直接进最深层，不用从分享根重钻 1~5 次列表请求；
 历史条目名也会变成真实目录名，不再停留在「PikPak 分享 xxxx」（省掉一次 `_fill_recent_names`）。

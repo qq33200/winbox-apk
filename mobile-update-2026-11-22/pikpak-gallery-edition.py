@@ -2284,7 +2284,8 @@ class Spider(object):
             files = self._share_files_safe(sid, pdir, pct)
             imgs = [f for f in files if _is_image(f)]
             imgs.sort(key=lambda x: _natural_key(str(x.get('name') or '')))
-            imgs = imgs[:40]
+            # 上限跟随列表上限（默认 300）；原先写死 40，110+ 张的图集只能翻到前 40 张。
+            imgs = imgs[:self.max_files]
             for item in imgs:
                 iname = str(item.get('name') or '') or '图片'
                 link = str(item.get('thumbnail_link') or '')
