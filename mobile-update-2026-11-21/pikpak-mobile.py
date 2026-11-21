@@ -166,8 +166,31 @@ def _auto_proxy():
     return picked
 
 
+def _normalize_share_link(link):
+    """把各种协议/域名/子域的分享链接统一成 https://mypikpak.com/s/<sid>[/<folder>][?pwd=...]。"""
+    text = str(link or '').strip()
+    match = _SHARE_ID_RE.search(text)
+    if not match:
+        return text
+    sid, folder = match.group(1), (match.group(2) or '')
+    url = 'https://mypikpak.com/s/' + sid + (('/' + folder) if folder else '')
+    pwd = re.search(r'[?&](?:pwd|pass_code|passcode|code)=([^&\s]+)', text, re.I)
+    if pwd:
+        url += '?pwd=' + urllib.parse.quote(urllib.parse.unquote(pwd.group(1)))
+    return url
+
+
 UA = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
       '(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36')
+# PikPak 分享链接的多种协议/域名写法（http(s)、pikpak://、mypikpak://、www/m 子域）
+_SHARE_LINK_RE = (r'(?:(?:https?|pikpak|mypikpak)://)?'
+                  r'(?:(?:www\.|m\.)?(?:mypikpak\.com|mypikpak\.net|pikpak\.me|pikpak\.com)/)?'
+                  r's/[A-Za-z0-9_/-]+(?:\?[A-Za-z0-9_=&%-]+)?')
+_SHARE_ID_RE = re.compile(
+    r'(?:(?:https?|pikpak|mypikpak)://)?'
+    r'(?:(?:www\.|m\.)?(?:mypikpak\.com|mypikpak\.net|pikpak\.me|pikpak\.com)/)?'
+    r's/([A-Za-z0-9_-]+)(?:/([A-Za-z0-9_-]+))?', re.I)
+
 API_BASE = 'https://api-drive.mypikpak.com'
 USER_BASE = 'https://user.mypikpak.com'
 CLIENT_ID = 'YUMx5nI8ZU8Ap8pm'
@@ -664,7 +687,7 @@ class Spider(object):
     @staticmethod
     def _parse_share(url):
         text = str(url or '').strip()
-        match = re.search(r'(?:mypikpak\.com|mypikpak\.net|pikpak\.me)/s/([A-Za-z0-9_-]+)(?:/([A-Za-z0-9_-]+))?', text)
+        match = _SHARE_ID_RE.search(text)
         if not match:
             return '', ''
         return match.group(1), (match.group(2) or '')
@@ -1319,16 +1342,19 @@ class Spider(object):
 
     def searchContent(self, key, quick, pg='1'):
         text = str(key or '').strip()
+        # PikPak App 的「分享码」写法：分享码：xxxx → 当分享链接处理
+        code = re.search(r'分享码\s*[:：]?\s*([A-Za-z0-9_-]{12,32})', text)
+        if code:
+            text = 'https://mypikpak.com/s/' + code.group(1) + '\n' + text
         if not text:
             return {'list': [], 'page': 1, 'pagecount': 1, 'limit': 0, 'total': 0}
         page = self._int(pg, 1, 1, 9999)
         # 支持一次粘贴多条（比如在浏览器里 Ctrl+A / Ctrl+C 整页复制）
-        all_links = re.findall(r'(?:https?://)?(?:mypikpak\.com|mypikpak\.net|pikpak\.me)/s/[A-Za-z0-9_/-]+(?:\?[A-Za-z0-9_=&%-]+)?', text)
+        all_links = re.findall(_SHARE_LINK_RE, text, re.I)
         uniq = []
         extra_pwd = self._share_pwd(text)
         for link in all_links:
-            if not link.lower().startswith('http'):
-                link = 'https://' + link
+            link = _normalize_share_link(link)
             if extra_pwd and 'pwd=' not in link:
                 link += ('&' if '?' in link else '?') + 'pwd=' + extra_pwd
             if link not in uniq:
@@ -1341,13 +1367,11 @@ class Spider(object):
                               'vod_name': name, 'vod_pic': '', 'vod_tag': 'folder',
                               'vod_remarks': '分享文件夹', 'vod_content': '分享链接：%s' % link})
             return self._page(items, page)
-        find = re.search(r'https?://(?:mypikpak\.com|mypikpak\.net|pikpak\.me)/s/[A-Za-z0-9_/-]+(?:\?[A-Za-z0-9_=&%-]+)?', text)
+        find = re.search(_SHARE_LINK_RE, text, re.I)
         if not find:
             find = re.search(r'(?:mypikpak\.com|mypikpak\.net|pikpak\.me)/s/[A-Za-z0-9_/-]+', text)
         if find:
-            url = find.group(0)
-            if not url.lower().startswith('http'):
-                url = 'https://' + url
+            url = _normalize_share_link(find.group(0))
             pwd = self._share_pwd(text)
             if pwd:
                 sep = '&' if '?' in url else '?'

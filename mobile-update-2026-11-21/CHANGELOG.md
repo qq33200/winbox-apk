@@ -29,6 +29,11 @@ Muse 更新 APK 时请按此清单移植，不要重新实现已确认的行为�
 3. **带提取码链接**
    - 搜索链接正则保留 `?pwd=...` 查询串；多链接粘贴时文本里的「提取码：xxxx」会补给缺 pwd 的链接。
    - 两种写法都验证过：`...?pwd=zekk`、`... 提取码：zekk`。
+   - **多种协议/域名**（11-21 11:55 补）：统一 `_SHARE_LINK_RE` / `_SHARE_ID_RE`，支持
+     `http://`、`https://`、`pikpak://`、`mypikpak://`、无协议、`www.`/`m.` 子域，
+     域名 `mypikpak.com` / `mypikpak.net` / `pikpak.me` / `pikpak.com`，并归一化为
+     `https://mypikpak.com/s/<sid>[/<folder>][?pwd=...]`。
+   - 另支持 App 的「分享码：xxxx」写法（需另配提取码）。7 种写法实测都能取到真实片名。
 
 4. **CSV 导入**
    - 新分类「CSV 导入」：`📂 重新导入 CSV` / `🗑 清空导入`。
