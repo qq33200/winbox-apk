@@ -132,3 +132,23 @@ APK 里那份 `playerContent` 只有 `s. / d. / v. / f.` 四个分支，没有 `
 - 桌面版 Win-Box 运行时已同步（图片兜底、空 config 不覆盖代理、单链下钻），不影响 APK。
 - 手机懒人包（`pikpak-懒人包.zip`）已按本文件重打。
 - 本次未改动 `magnet.py`、`winbox_spider.py`、搜索范围过滤等 M1/M2 逻辑。
+
+---
+
+## 附：图集版（含历史直达记忆）
+
+`pikpak-gallery-edition.py`，123,081 B，md5 `c6526f5efe95b2aad78e2c133fa63e1c`，
+sha256 `ce25a7e9272ffb476a2d5debcd310f5b96d1cbf4b0ca6f48f83d76a8f94f5557`。
+
+它以本目录 `pikpak.py`（Muse 00:37 交付的那份）为底，**只加了 3 处**，其余完全一致：
+
+1. `_remember(self, url, name, dir_id=None, dir_name=None)`：多记 `dir` / `dn` 两个字段。
+2. `_share_browse` 下钻循环里记录最后一层目录名，末行改为
+   `self._remember(url, deep_name or ('PikPak 分享 ' + sid[:8]), target if hops else None, deep_name)`。
+3. `_recent_items` / `_csv_items` 的卡片 `fid` 从 `''` 改为 `str(entry.get('dir') or '')`。
+
+效果：历史记录 / CSV 卡片点「浏览目录」直接进最深层，不用从分享根重钻 1~5 次列表请求；
+历史条目名也会变成真实目录名，不再停留在「PikPak 分享 xxxx」（省掉一次 `_fill_recent_names`）。
+
+**注意**：图集线路（`vod_play_from = '图片'`）在这份里**保留**，和本目录 `pikpak.py` 一致。
+只有桌面版（没有图集页）才需要去掉线路，那是另一份文件，不要混用。
