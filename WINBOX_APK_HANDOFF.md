@@ -153,3 +153,17 @@ Win-Box 的 `package.json` 自述：“Windows 桌面移植版 — 导入源规�
 | `winbox_guard.py` | `2026-11-11-winbox-asr-subtitle/winbox_guard.py` | 守护逻辑参考（P2，不建议照搬） |
 
 未上传：二进制运行时、ONNX 模型、app.asar 备份、用户订阅与凭据文件。需要时由 Muse 从上游仓库/Release 获取。
+
+---
+
+## 9. 增量交接：手机端图片兼容修复（2026-11-22）
+
+见 `mobile-update-2026-11-22/`：
+
+- `pikpak.py`：当前完整手机端源（含图片兼容修复、单链自动下钻、空 config 不覆盖代理），
+  直接覆盖 APK 的 `assets/python_sources/pikpak.py` 后重新打包。
+- `CHANGELOG.md`：根因分析（壳侧 `looksLikeImageMediaUrl` 拦截 + 源侧缺 `i.` 分支）、
+  改动清单、真机验证数据、以及可选的「图集页」规格。
+
+壳侧不改一行也能用：图片条目改为看详情页海报（可双指缩放）。
+
