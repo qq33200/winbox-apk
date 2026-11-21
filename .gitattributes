@@ -1,4 +1,2 @@
-*.py text eol=lf
-*.md text eol=lf
-*.csv text eol=lf
-*.json text eol=lf
+mobile-update-2026-11-22/*.py text eol=lf
+mobile-update-2026-11-22/*.md text eol=lf
