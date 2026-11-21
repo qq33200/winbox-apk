@@ -344,4 +344,16 @@ D:/workbuddy/影视聚合/_inventory/local-py-sources.csv   11,544 B（81 行清
 ```
 
 未推公网仓库的原因：仓库 `qq33200/winbox-apk` 是 **public**，而这 53 份是第三方站点爬虫代码，
-不宜代他人分发。需要的话可以另开私有仓库或直接传压缩包。
+不宜代他人分发。
+
+**Google 云盘副本（2026-11-22 01:30）**
+
+```
+https://drive.google.com/file/d/1wh97DRhjEHYOHMaWQJ07XM1C2maykAv3/view
+文件 id  1wh97DRhjEHYOHMaWQJ07XM1C2maykAv3
+大小     566,289 B
+md5      b513b69e493ea9e10af26c0410c517a9
+共享     知道链接的任何人可读（只读）
+```
+
+已从公网链接回传下载校验：`566,289 B`，md5 与本地一致（`b513b69e…`），内容未被改动。
