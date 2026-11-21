@@ -336,24 +336,28 @@ Content-Type: text/html; charset=utf-8
 
 ### 8.4 文件归档
 
-53 个本地文件已打包为本地归档（**未推送公网仓库**）：
+**主通道 = 本仓库。** 只附机器可读清单，**不附 53 个文件本体**：
+
+```
+mobile-update-2026-11-22/local-py-sources.csv    11,544 B   81 行，逐条含 md5
+```
+
+不附本体的原因：本仓库是 **public**，而这 53 份是第三方站点爬虫代码，不宜代他人分发。
+需要其中某几个的具体内容时，按名字单独取即可。
+
+本地另存一份归档（不对外）：
 
 ```
 D:/workbuddy/影视聚合/_inventory/local-py-sources.zip   553.0 KB（53 个文件 + MANIFEST.csv）
-D:/workbuddy/影视聚合/_inventory/local-py-sources.csv   11,544 B（81 行清单，含 md5）
 ```
 
-未推公网仓库的原因：仓库 `qq33200/winbox-apk` 是 **public**，而这 53 份是第三方站点爬虫代码，
-不宜代他人分发。
-
-**Google 云盘副本（2026-11-22 01:30）**
+**顺带记一条踩坑结论（同场景可复用）**：本想用 Google 服务账号把归档放进云盘共享文件夹，
+实测行不通——服务账号自身配额为 0，且文件放进共享文件夹后所有权仍属服务账号，因此上传即报：
 
 ```
-https://drive.google.com/file/d/1wh97DRhjEHYOHMaWQJ07XM1C2maykAv3/view
-文件 id  1wh97DRhjEHYOHMaWQJ07XM1C2maykAv3
-大小     566,289 B
-md5      b513b69e493ea9e10af26c0410c517a9
-共享     知道链接的任何人可读（只读）
+403 storageQuotaExceeded
+Service Accounts do not have storage quota. Leverage shared drives, or use OAuth delegation instead.
 ```
 
-已从公网链接回传下载校验：`566,289 B`，md5 与本地一致（`b513b69e…`），内容未被改动。
+Google 给的两条出路（共享云端硬盘 / OAuth 委托）都需要 Workspace，免费 Gmail 账号两者都没有。
+结论：**个人 Gmail 账号 + 服务账号的组合无法往云盘写入文件**，只能走用户本人的 OAuth 令牌。
