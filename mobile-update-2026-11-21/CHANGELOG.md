@@ -73,3 +73,14 @@ Muse 更新 APK 时请按此清单移植，不要重新实现已确认的行为�
 1. 以本包的 `pikpak-mobile.py` 为参照，把上述 1~7 项落进 APK 的 PikPak 源/UI；不要照抄 Win-Box 专属的 9978 本机接口调用。
 2. `pikpak-records.csv` 是用户自己整理并提供的链接样例，可作为 APK 的可导入数据参考。
 3. 完成后在 Issue #7 评论里给出 APK 下载链接、大小、构建时间，以及「Win-Box 功能 → APK 状态」兼容性矩阵；标签按协议改 `status:review`。
+
+
+## 续播提速（11-21 12:15）
+
+- 历史页新增 `▶ 继续播放` 直达卡片：`playerContent` 时把 `{t:'s',u,sid,fid,anc,n,sz}` 回写进对应记录，
+  点击即调 `playerContent`，不再「目录 → 详情 → 播放」三步。
+- 落盘缓存 `pikpak-cache.json`（与 state 同目录）：`session`（URL→sid/pid/pct，30 分钟）、
+  `play`（sid|fid|线路→直链，30 分钟）；实测第二次播放不再调用 `_open_share` / `_share_medias`。
+- 失效目录 ID 记录 `_BAD_FOLDER_IDS`（1 小时）：`file_info` 确认失效后，`_open_share` 直接回退根目录，
+  省掉一次必失败的 detail 请求（实测该请求约 2.9s）。
+- 回归 11/11 PASS；Win-Box 已重启。
