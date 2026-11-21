@@ -10,8 +10,11 @@
 ## 文件说明
 
 - `pikpak.py`：手机 / 桌面通用的完整源，124,383 字节，`# @tvbox-source`。
-  md5 `9ea5413f42d0930e0ef1918d96af948a`、sha256 前缀 `e3f51f7246146d59`
+  md5 `9ea5413f42d0930e0ef1918d96af948a`
+  sha256 `944191772c982918f8c139308e0a5daeb2fa8ce03ed12ef5322cc77724da5b7d`
   （`git clone` 与 `raw.githubusercontent.com` 取到的字节一致，仓库已加 `.gitattributes` 锁 LF）。
+  > 更正（11-22 00:50）：本文档最初写的 sha256 前缀 `e3f51f7246146d59` 是拿 CRLF 版本算的，
+  > 与 md5 不是同一个字节序，属于笔误；上面的 `94419177…` 才是正确值。
   它对应 APK 里的 `assets/python_sources/pikpak.py`（`py_spider.dart` 走 `asset://` 加载）。
 - 相对 APK 里现在那份，本文件额外包含三部分：**手机端图片兼容修复**、
   **单链自动下钻**（APK 那份还没有）、**`pikpak-config.json` 空值清空代理的修复**。
