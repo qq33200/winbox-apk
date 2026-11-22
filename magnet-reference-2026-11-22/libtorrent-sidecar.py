@@ -38,6 +38,7 @@ CHUNK = 256 * 1024
 DEADLINE_PIECES = 32          # 播放点前后各给多少片设 deadline
 DEADLINE_MS = 2000            # 第一片的 deadline，往后每片 +60ms
 FIRST_WAIT_SEC = 40           # 首片最多等多久（等不到就回 503，避免播放器干等）
+REARM_BYTES = 8 * 1024 * 1024  # 单连接连续读时，每读 8MB 把 deadline 窗口往前推一次
 
 
 class Store(object):
@@ -117,7 +118,6 @@ class Store(object):
         base = fs.file_offset(file_index - 1)
         first = int((base + offset) // pl)
         last = min(int(ti.num_pieces()) - 1, first + DEADLINE_PIECES)
-        h.set_sequential_download(False)
         for k in range(first, last + 1):
             h.set_piece_deadline(k, DEADLINE_MS + (k - first) * 60)
         return last - first + 1
@@ -272,6 +272,7 @@ class Handler(BaseHTTPRequestHandler):
         fh = open(abs_path, 'rb')
         try:
             pos = start
+            last_arm = start
             while pos <= end:
                 stop = min(pos + CHUNK - 1, end)
                 first = int((base + pos) // pl)
@@ -283,6 +284,11 @@ class Handler(BaseHTTPRequestHandler):
                 fh.seek(pos)
                 self.wfile.write(fh.read(stop - pos + 1))
                 pos = stop + 1
+                # 单个 Range 响应会连续读很多 MB，播放点一直在前移：
+                # 不在这里补 deadline，窗口过期后就退回 rarest-first，表现为「播几分钟开始卡」
+                if pos - last_arm >= REARM_BYTES:
+                    self.store.seek(h, idx, pos)
+                    last_arm = pos
         except (BrokenPipeError, ConnectionResetError):
             pass
         finally:
