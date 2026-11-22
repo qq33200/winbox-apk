@@ -165,11 +165,99 @@ def _bt_cache_dirs():
     return outs
 
 
-def _cached_torrent_name(info_hash):
-    """在同一次播放之后，aria2 会把 <infohash>.torrent 落到 bt 缓存里。
+_VIDEO_EXTS = {'mp4', 'm4v', 'mkv', 'avi', 'ts', 'm2ts', 'mov', 'webm', 'flv', 'wmv', 'mpg', 'mpeg', 'rmvb'}
 
-    用它反查真实片名：裸磁链没有 dn=，这是唯一可靠且不依赖外网的来源。
+
+def _ext_of(name):
+    base = str(name or '').split('/')[-1].split('\\')[-1]
+    dot = base.rfind('.')
+    return base[dot + 1:].lower() if dot > 0 else ''
+
+
+def _is_video_file(name):
+    return _ext_of(name) in _VIDEO_EXTS
+
+
+def _stem(name):
+    base = str(name or '').split('/')[-1].split('\\')[-1]
+    ext = _ext_of(base)
+    return base[:len(base) - len(ext) - 1] if ext else base
+
+
+def _natural_key(name):
+    """EP2 排在 EP10 前面。"""
+    return [int(t) if t.isdigit() else t.lower() for t in re.split(r'(\d+)', str(name or ''))]
+
+
+def _app_resolve(magnet, wait_ms=1500):
+    """让客户端只解析元数据（不播放），返回 {'name','files'} 或 None。
+
+    客户端有个 /bt/resolve 接口：丢磁链进去，它拿元数据、落 <infohash>.torrent 再回文件清单。
+    wait_ms=0 表示只下单不等，让它后台跑。
     """
+    base = os.environ.get('WINBOX_PLAYER_BASE') or 'http://127.0.0.1:9978'
+    url = base + '/bt/resolve?' + urllib.parse.urlencode({'magnet': magnet, 'wait': int(wait_ms)})
+    try:
+        req = urllib.request.Request(url, headers={'User-Agent': 'winbox-magnet/1'})
+        # 本机直连，绕开系统代理
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        with opener.open(req, timeout=max(3.0, wait_ms / 1000.0 + 2.5)) as resp:
+            obj = json.loads(resp.read().decode('utf-8', 'replace'))
+        if isinstance(obj, dict) and obj.get('ok') and obj.get('ready'):
+            return {'name': obj.get('name') or '',
+                    'files': [(str(f.get('path') or ''), int(f.get('length') or 0))
+                              for f in (obj.get('files') or []) if isinstance(f, dict)]}
+    except Exception:
+        return None
+    return None
+
+
+def _humansize(num):
+    try:
+        n = float(num)
+    except Exception:
+        return '-'
+    for unit in ('B', 'KB', 'MB', 'GB'):
+        if n < 1024:
+            return ('%d %s' % (n, unit)) if unit in ('B', 'KB') else ('%.2f %s' % (n, unit))
+        n /= 1024.0
+    return '%.2f TB' % n
+
+
+def _torrent_files(raw):
+    """从种子字节取出文件清单：[(路径, 字节)]。单文件种子返回一条。"""
+    meta, _ = _bdecode(raw)
+    if not isinstance(meta, dict):
+        return []
+    info = meta.get(b'info') or {}
+    if not isinstance(info, dict):
+        return []
+    name = _text_of(info.get(b'name'))
+    out = []
+    files = info.get(b'files')
+    if isinstance(files, list):
+        for item in files:
+            if not isinstance(item, dict):
+                continue
+            try:
+                length = int(item.get(b'length') or 0)
+            except Exception:
+                length = 0
+            parts = [_text_of(x) for x in (item.get(b'path') or [])]
+            rel = '/'.join([p for p in parts if p])
+            out.append((rel or name, length))
+    else:
+        try:
+            length = int(info.get(b'length') or 0)
+        except Exception:
+            length = 0
+        if length:
+            out.append((name, length))
+    return out
+
+
+def _cached_torrent_path(info_hash):
+    """在同一次播放之后，aria2 会把 <infohash>.torrent 落到 bt 缓存里。"""
     ih = str(info_hash or '').lower()
     if len(ih) == 32:
         ih = _b32_to_hex(ih)
@@ -178,16 +266,33 @@ def _cached_torrent_name(info_hash):
     for d in _bt_cache_dirs():
         for name in (ih, ih.upper()):
             p = os.path.join(d, name + '.torrent')
-            if not os.path.isfile(p):
-                continue
-            try:
-                with open(p, 'rb') as fh:
-                    _hash, title, _tr = _torrent_meta(fh.read())
-                if title:
-                    return title.strip()
-            except Exception:
-                continue
+            if os.path.isfile(p):
+                return p
     return ''
+
+
+def _cached_torrent_name(info_hash):
+    """用它反查真实片名：裸磁链没有 dn=，这是唯一可靠且不依赖外网的来源。"""
+    path = _cached_torrent_path(info_hash)
+    if not path:
+        return ''
+    try:
+        with open(path, 'rb') as fh:
+            _hash, title, _tr = _torrent_meta(fh.read())
+        return (title or '').strip()
+    except Exception:
+        return ''
+
+
+def _cached_torrent_files(info_hash):
+    path = _cached_torrent_path(info_hash)
+    if not path:
+        return []
+    try:
+        with open(path, 'rb') as fh:
+            return _torrent_files(fh.read())
+    except Exception:
+        return []
 
 
 def _read_torrent(text):
@@ -606,6 +711,12 @@ class Spider(object):
                 'vod_pic': '', 'vod_remarks': source,
                 'vod_content': '%s：\n%s' % (source, key)}
         self._remember(key, item['vod_name'])
+        if key.lower().startswith('magnet:'):
+            # 先让客户端把元数据解析任务挂上（不等结果），点进详情时往往已经有文件清单
+            # 已有本地种子的不要重复下单：同一 infohash 注册两次会让 aria2 报 12，播放直接失败
+            hit = _BTIH_RE.search(key)
+            if not (hit and _cached_torrent_path(hit.group(1))):
+                _app_resolve(key, 0)
         return {'list': [item], 'page': 1, 'pagecount': 1, 'limit': 1, 'total': 1}
 
     def _all_import_items(self):
@@ -662,13 +773,53 @@ class Spider(object):
         magnet = _b64d(vid[2:])
         name = self._name(magnet)
         self._remember(magnet, name)
+        content = '磁力链接：\n' + magnet
+        hit = _BTIH_RE.search(magnet)
+        files = _cached_torrent_files(hit.group(1)) if hit else []
+        if not files and hit:
+            # 本地没缓存种子：让客户端先解析（只取元数据，不播放），拿不到就提示解析中
+            resolved = _app_resolve(magnet, 1500)
+            files = _cached_torrent_files(hit.group(1))
+            if not files and resolved:
+                files = resolved['files']
+                if resolved['name'] and self._is_placeholder_name(name):
+                    name = resolved['name']
+                    self._remember(magnet, name)
+        videos = [(p, n) for p, n in files if _is_video_file(p)] if files else []
+        if len(videos) > 1:
+            videos.sort(key=lambda x: _natural_key(x[0]))
+            eps = []
+            for idx, (vp, _vn) in enumerate(videos[:200], 1):
+                label = _stem(vp) or ('第%d个视频' % idx)
+                eps.append(label.replace('$', '＄').replace('#', '＃') + '$' + magnet)
+            play_url = '#'.join(eps)
+            remarks = '%d 集' % min(len(videos), 200)
+        else:
+            play_url = name.replace('$', '＄').replace('#', '＃') + '$' + magnet
+            remarks = ('%d 个文件' % len(files)) if files else '边下边播'
+        if files:
+            total = sum(n for _p, n in files)
+            rows = []
+            for i, (fp, fn) in enumerate(files[:20], 1):
+                rows.append('%2d. %s（%s）' % (i, fp[:70], _humansize(fn)))
+            if len(files) > 20:
+                rows.append('… 其余 %d 个文件' % (len(files) - 20))
+            title = '【已解析】'
+            if len(videos) > 1:
+                title += '%d 个视频（按集列出）/ ' % len(videos)
+            content += ('\n\n%s%d 个文件，合计 %s\n%s'
+                        % (title, len(files), _humansize(total), '\n'.join(rows)))
+        else:
+            content += ('\n\n【未解析】本地还没有这个磁链的种子元数据。'
+                        '点开播放时才去网络要，冷门种子可能要几十秒甚至超时。')
+        content += ('\n\n提示：一集对应一个文件，点哪集就只下哪个文件；'
+                    'mp4/webm 内置直接播，mkv/HEVC 走「磁力外部播放器」。')
         return {'list': [{
             'vod_id': vid, 'vod_name': name, 'vod_pic': '',
-            'vod_content': '磁力链接：\n' + magnet + '\n\n提示：第一次点开要等种子元数据与文件头落盘，'
-                           '冷门种子可能几十秒；做种者过少会提示缓冲超时。',
-            'vod_remarks': '边下边播',
+            'vod_content': content,
+            'vod_remarks': remarks,
             'vod_play_from': '磁力',
-            'vod_play_url': name.replace('$', '＄').replace('#', '＃') + '$' + magnet,
+            'vod_play_url': play_url,
         }]}
 
     def playerContent(self, flag, id, vipFlags):
